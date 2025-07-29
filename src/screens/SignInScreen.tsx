@@ -11,7 +11,7 @@ export function SignInScreen({navigation}: any) {
 
   const [loading, setLoading] = useState(false);
 
-  const [email, setEmail] = useState('chris@authsignal.com');
+  const [email, setEmail] = useState('');
 
   async function signInWithPasskey() {
     const {data, errorCode} = await authsignal.passkey.signIn({action: 'signIn'});

@@ -40,10 +40,6 @@ export async function signOut(): Promise<void> {
   await clearRefreshToken();
 }
 
-export async function getUserAuthenticators() {
-  return await fetchWithAuth(`${url}/authenticators`, {method: 'GET'});
-}
-
 export async function initPasskeyRegistration() {
   const response = await fetchWithAuth(`${url}/register/passkey`, {method: 'POST'});
 

@@ -1,6 +1,6 @@
 # Mobile SDK example app
 
-This repository contains an example app implemented in React Native which showcases the Authsignal Mobile SDK.
+This repository contains an example app implemented in React Native which showcases the [Authsignal Mobile SDK](https://docs.authsignal.com/sdks/client/mobile).
 
 ## Example app
 

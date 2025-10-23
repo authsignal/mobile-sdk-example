@@ -2,8 +2,9 @@ import React, {useEffect} from 'react';
 import {Alert, ScrollView, StyleSheet, Text} from 'react-native';
 
 import {authsignal} from '../authsignal';
-import {getUserProfile, signOut} from '../api';
+import {getUserProfile, initPushRegistration, signOut} from '../api';
 import {useAppContext} from '../context';
+import {useForegroundEffect} from '../hooks/useForegroundEffect';
 
 export function HomeScreen({navigation}: any) {
   const {setEmail, setAuthenticated} = useAppContext();
@@ -11,9 +12,9 @@ export function HomeScreen({navigation}: any) {
   // Prompt to create passkey
   useEffect(() => {
     (async () => {
-      const isPasskeyAvailable = await authsignal.passkey.isAvailableOnDevice();
+      const shouldPromptToCreatePasskey = await authsignal.passkey.shouldPromptToCreatePasskey();
 
-      if (!isPasskeyAvailable) {
+      if (shouldPromptToCreatePasskey) {
         navigation.navigate('CreatePasskey');
       }
     })();
@@ -44,6 +45,30 @@ export function HomeScreen({navigation}: any) {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      const response = await authsignal.push.getCredential();
+
+      if (response.data) {
+        return;
+      }
+
+      await initPushRegistration();
+
+      await authsignal.push.addCredential();
+    })();
+  }, [navigation]);
+
+  useForegroundEffect(() => {
+    (async () => {
+      const response = await authsignal.push.getChallenge();
+
+      if (response.data) {
+        navigation.navigate('PushChallenge', {challengeId: response.data.challengeId});
+      }
+    })();
+  });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

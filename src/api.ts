@@ -46,6 +46,12 @@ export async function initPasskeyRegistration() {
   await authsignal.setToken(response.token);
 }
 
+export async function initPushRegistration() {
+  const response = await fetchWithAuth(`${url}/register/push`, {method: 'POST'});
+
+  await authsignal.setToken(response.token);
+}
+
 export async function getUserProfile() {
   return await fetchWithAuth(`${url}/profile`, {method: 'GET'});
 }

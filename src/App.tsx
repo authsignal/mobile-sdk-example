@@ -5,11 +5,13 @@ import {Alert, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {CreatePasskeyScreen} from './screens/CreatePasskeyScreen';
+import {PushChallengeScreen} from './screens/PushChallengeScreen';
 import {HomeScreen} from './screens/HomeScreen';
 import {SignInScreen} from './screens/SignInScreen';
 import {VerifyEmailScreen} from './screens/VerifyEmailScreen';
 import {AppContext} from './context';
 import {getAccessToken, signOut} from './api';
+import {authsignal} from './authsignal';
 
 const Stack = createStackNavigator();
 
@@ -42,6 +44,8 @@ function App() {
 
   const onSignOutPressed = async () => {
     await signOut();
+
+    await authsignal.push.removeCredential();
 
     setAuthenticated(false);
   };
@@ -85,6 +89,7 @@ function App() {
             />
             <Stack.Group screenOptions={{presentation: 'modal', headerShown: false}}>
               <Stack.Screen name="CreatePasskey" component={CreatePasskeyScreen} />
+              <Stack.Screen name="PushChallenge" component={PushChallengeScreen} />
             </Stack.Group>
           </Stack.Navigator>
         ) : (

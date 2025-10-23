@@ -19,7 +19,10 @@ export function CreatePasskeyScreen({navigation}: any) {
         onPress={async () => {
           await initPasskeyRegistration();
 
-          const {error} = await authsignal.passkey.signUp({username: email});
+          const {error} = await authsignal.passkey.signUp({
+            username: email,
+            ignorePasskeyAlreadyExistsError: true,
+          });
 
           if (!error) {
             Alert.alert('Passkey created.', 'You can now use your passkey to sign in.', [

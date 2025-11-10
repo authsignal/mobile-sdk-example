@@ -48,9 +48,9 @@ export function HomeScreen({navigation}: any) {
 
   useEffect(() => {
     (async () => {
-      const response = await authsignal.push.getCredential();
+      const {data: existingCredential} = await authsignal.push.getCredential();
 
-      if (response.data) {
+      if (existingCredential) {
         return;
       }
 
@@ -60,14 +60,16 @@ export function HomeScreen({navigation}: any) {
     })();
   }, [navigation]);
 
-  useForegroundEffect(() => {
-    (async () => {
-      const response = await authsignal.push.getChallenge();
+  async function checkForPendingPushChallenge() {
+    const response = await authsignal.push.getChallenge();
 
-      if (response.data) {
-        navigation.navigate('PushChallenge', {challengeId: response.data.challengeId});
-      }
-    })();
+    if (response.data) {
+      navigation.navigate('PushChallenge', {challengeId: response.data.challengeId});
+    }
+  }
+
+  useForegroundEffect(() => {
+    checkForPendingPushChallenge();
   });
 
   return (

@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Props {
   children: any;
@@ -8,12 +7,11 @@ interface Props {
   disabled?: boolean;
   theme?: 'primary' | 'secondary';
   image?: any;
-  icon?: string;
   onPress: () => Promise<void> | void;
 }
 
 export const Button = (props: Props) => {
-  const {children, disabled, theme = 'primary', image, icon, onPress} = props;
+  const {children, disabled, theme = 'primary', image, onPress} = props;
 
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +31,6 @@ export const Button = (props: Props) => {
       ) : (
         <View style={styles.row}>
           {image && <Image style={styles.image} resizeMode={'contain'} source={image} />}
-          {icon && <Icon style={styles.icon} name={icon} size={16} color={theme === 'primary' ? 'white' : 'black'} />}
           <Text style={[styles.text, theme === 'primary' ? styles.textPrimary : styles.textSecondary]}>{children}</Text>
         </View>
       )}

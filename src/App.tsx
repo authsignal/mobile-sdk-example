@@ -2,7 +2,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Alert, Image, StyleSheet, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {FontAwesome6} from '@react-native-vector-icons/fontawesome6';
 
 import {CreatePasskeyScreen} from './screens/CreatePasskeyScreen';
 import {PushChallengeScreen} from './screens/PushChallengeScreen';
@@ -82,7 +82,7 @@ function App() {
                         {text: 'Sign out', onPress: onSignOutPressed},
                       ]);
                     }}>
-                    <Icon name="user" size={18} color="#525eea" />
+                    <FontAwesome6 name="user" size={18} color="#525eea" iconStyle="solid" />
                   </TouchableOpacity>
                 ),
               }}

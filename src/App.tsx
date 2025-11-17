@@ -5,9 +5,11 @@ import {Alert, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {FontAwesome6} from '@react-native-vector-icons/fontawesome6';
 
 import {CreatePasskeyScreen} from './screens/CreatePasskeyScreen';
+import {CreatePinScreen} from './screens/CreatePinScreen';
 import {PushChallengeScreen} from './screens/PushChallengeScreen';
 import {HomeScreen} from './screens/HomeScreen';
 import {SignInScreen} from './screens/SignInScreen';
+import {PinEntryScreen} from './screens/PinEntryScreen';
 import {VerifyEmailScreen} from './screens/VerifyEmailScreen';
 import {AppContext} from './context';
 import {getAccessToken, signOut} from './api';
@@ -89,13 +91,23 @@ function App() {
             />
             <Stack.Group screenOptions={{presentation: 'modal', headerShown: false}}>
               <Stack.Screen name="CreatePasskey" component={CreatePasskeyScreen} />
+              <Stack.Screen name="CreatePin" component={CreatePinScreen} />
               <Stack.Screen name="PushChallenge" component={PushChallengeScreen} />
             </Stack.Group>
           </Stack.Navigator>
         ) : (
-          <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="SignIn" component={SignInScreen} />
-            <Stack.Screen name="SignInModal" component={SignInModal} options={{presentation: 'modal'}} />
+          <Stack.Navigator>
+            <Stack.Screen name="SignIn" component={SignInScreen} options={{headerShown: false}} />
+            <Stack.Screen
+              name="VerifyEmail"
+              component={VerifyEmailScreen}
+              options={{presentation: 'modal', title: '', headerBackTitle: 'Back'}}
+            />
+            <Stack.Screen
+              name="PinEntry"
+              component={PinEntryScreen}
+              options={{presentation: 'modal', title: '', headerBackTitle: 'Back'}}
+            />
           </Stack.Navigator>
         )}
       </NavigationContainer>
@@ -104,16 +116,6 @@ function App() {
 }
 
 export default App;
-
-function SignInModal({route}: any) {
-  return (
-    <Stack.Navigator screenOptions={{headerShown: true, title: '', headerBackTitle: 'Back'}}>
-      <Stack.Group>
-        <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} initialParams={route.params} />
-      </Stack.Group>
-    </Stack.Navigator>
-  );
-}
 
 const styles = StyleSheet.create({
   headerTitle: {

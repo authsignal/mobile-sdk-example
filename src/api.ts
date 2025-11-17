@@ -52,6 +52,12 @@ export async function initPushRegistration() {
   await authsignal.setToken(response.token);
 }
 
+export async function initInAppRegistration() {
+  const response = await fetchWithAuth(`${url}/register/in-app`, {method: 'POST'});
+
+  await authsignal.setToken(response.token);
+}
+
 export async function getUserProfile() {
   return await fetchWithAuth(`${url}/profile`, {method: 'GET'});
 }

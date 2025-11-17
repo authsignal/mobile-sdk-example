@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import * as Keychain from 'react-native-keychain';
 
 import {Button} from '../components/Button';
 import {authsignal} from '../authsignal';
@@ -29,6 +30,13 @@ export function SignInScreen({navigation}: any) {
     const {data, errorCode} = await authsignal.passkey.signIn({action: 'signIn'});
 
     if (errorCode === 'user_canceled' || errorCode === 'no_credential' || !data?.token) {
+      // Fall back to PIN if it has been setup and no passkey is available or user cancels
+      const pinCredentials = await Keychain.getGenericPassword({service: '@simplify'});
+
+      if (pinCredentials) {
+        navigation.navigate('PinEntry');
+      }
+
       return;
     }
 
@@ -38,9 +46,9 @@ export function SignInScreen({navigation}: any) {
       await signIn(data.token);
 
       await setAuthenticated(true);
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert('Error', error.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        Alert.alert('Error', err.message);
       }
     } finally {
       setLoading(false);
@@ -57,7 +65,7 @@ export function SignInScreen({navigation}: any) {
     try {
       await initEmailSignIn(email);
 
-      navigation.navigate('SignInModal', {email});
+      navigation.navigate('VerifyEmail', {email});
     } catch (err) {
       if (err instanceof Error) {
         Alert.alert('Invalid credentials', err.message);

@@ -9,9 +9,15 @@ import {useForegroundEffect} from '../hooks/useForegroundEffect';
 export function HomeScreen({navigation}: any) {
   const {setEmail, setAuthenticated} = useAppContext();
 
-  // Prompt to create passkey
+  // Prompt to create PIN & passkey if required
   useEffect(() => {
     (async () => {
+      const {data: existingInAppCredential} = await authsignal.inapp.getCredential({username: 'chris@authsignal.com'});
+
+      if (!existingInAppCredential) {
+        return navigation.navigate('CreatePin');
+      }
+
       const shouldPromptToCreatePasskey = await authsignal.passkey.shouldPromptToCreatePasskey();
 
       if (shouldPromptToCreatePasskey) {
@@ -46,6 +52,7 @@ export function HomeScreen({navigation}: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Register for push verification
   useEffect(() => {
     (async () => {
       const {data: existingCredential} = await authsignal.push.getCredential();

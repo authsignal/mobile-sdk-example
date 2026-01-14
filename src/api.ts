@@ -5,17 +5,54 @@ import {authsignal} from './authsignal';
 
 const url = `https://${API_GATEWAY_ID}.execute-api.${AWS_REGION}.amazonaws.com`;
 
-export async function initEmailSignIn(email: string) {
-  const response = await fetch(`${url}/sign-in/email`, {
-    method: 'POST',
-    body: JSON.stringify({email}),
-  }).then(res => res.json());
+const deviceId = '63e07717-5efd-4687-8d12-5bba3ac06b32';
 
-  await authsignal.setToken(response.token);
+interface SendOtpInput {
+  email?: string;
+  phoneNumber?: string;
+  verificationMethod?: 'EMAIL_OTP' | 'WHATSAPP';
+  challengeId?: string;
 }
 
-export async function signIn(token: string): Promise<void> {
-  const response = await fetch(`${url}/sign-in`, {
+export async function sendOtp(input: SendOtpInput) {
+  const {challengeId, errorCode, errorDescription} = await fetch(`${url}/otp`, {
+    method: 'POST',
+    body: JSON.stringify({...input, deviceId}),
+  }).then(res => res.json());
+
+  if (errorDescription) {
+    console.log('errorDescription', errorDescription);
+  }
+
+  return {challengeId, errorCode};
+}
+
+interface SignInWithOtpInput {
+  challengeId: string;
+  verificationCode: string;
+}
+
+export async function signInWithOtp(input: SignInWithOtpInput) {
+  const response = await fetch(`${url}/sign-in/otp`, {
+    method: 'POST',
+    body: JSON.stringify({...input, deviceId}),
+  }).then(res => res.json());
+
+  const {isVerified, challengeId, accessToken, refreshToken} = response;
+
+  if (accessToken && refreshToken) {
+    await setAccessToken(accessToken);
+    await setRefreshToken(refreshToken);
+  }
+
+  return {
+    isVerified,
+    challengeId,
+  };
+}
+
+export async function signInWithToken(token: string): Promise<void> {
+  const response = await fetch(`${url}/sign-in/token`, {
     method: 'POST',
     body: JSON.stringify({token}),
   }).then(res => res.json());
@@ -38,6 +75,33 @@ export async function signOut(): Promise<void> {
 
   await clearAccessToken();
   await clearRefreshToken();
+}
+
+interface InitWhatsAppRegistrationInput {
+  phoneNumber: string;
+}
+
+export async function initWhatsAppRegistration(input: InitWhatsAppRegistrationInput) {
+  const {challengeId} = await fetchWithAuth(`${url}/register/whatsapp`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+
+  return {challengeId};
+}
+
+interface FinishWhatsAppRegistrationInput {
+  challengeId: string;
+  verificationCode: string;
+}
+
+export async function finishWhatsAppRegistration(input: FinishWhatsAppRegistrationInput) {
+  const {isVerified} = await fetchWithAuth(`${url}/register/whatsapp/verify`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+
+  return {isVerified};
 }
 
 export async function initPasskeyRegistration() {

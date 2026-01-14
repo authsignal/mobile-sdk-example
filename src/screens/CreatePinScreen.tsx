@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
 import {Alert, SafeAreaView, StyleSheet, Text, TextInput} from 'react-native';
-import * as Keychain from 'react-native-keychain';
 
 import {Button} from '../components/Button';
 import {authsignal} from '../authsignal';
 import {initInAppRegistration} from '../api';
+import {useAppContext} from '../context';
 
 export function CreatePinScreen({navigation}: any) {
+  const {email} = useAppContext();
   const [pin, setPin] = useState('');
 
   return (
@@ -26,13 +27,13 @@ export function CreatePinScreen({navigation}: any) {
         onPress={async () => {
           await initInAppRegistration();
 
-          const {data, error} = await authsignal.inapp.addCredential({username: 'chris@authsignal.com'});
+          const username = email!;
+
+          const {data, error} = await authsignal.inapp.createPin({username, pin});
 
           if (error || !data) {
             Alert.alert('Error adding PIN', error ?? 'Unexpected error');
           } else {
-            await Keychain.setGenericPassword(data.userId, pin, {service: '@simplify'});
-
             navigation.goBack();
           }
         }}>

@@ -5,26 +5,36 @@ import {authsignal} from '../authsignal';
 import {getUserProfile, initPushRegistration, signOut} from '../api';
 import {useAppContext} from '../context';
 import {useForegroundEffect} from '../hooks/useForegroundEffect';
+import {Button} from '../components/Button';
 
 export function HomeScreen({navigation}: any) {
-  const {setEmail, setAuthenticated} = useAppContext();
+  const {email, setEmail, setAuthenticated} = useAppContext();
 
   // Prompt to create PIN & passkey if required
   useEffect(() => {
     (async () => {
-      const {data: existingInAppCredential} = await authsignal.inapp.getCredential({username: 'chris@authsignal.com'});
+      if (!email) {
+        return;
+      }
 
-      if (!existingInAppCredential) {
+      const {data: usernames} = await authsignal.inapp.getAllPinUsernames();
+
+      if (!email || !usernames?.includes(email)) {
         return navigation.navigate('CreatePin');
       }
 
-      const shouldPromptToCreatePasskey = await authsignal.passkey.shouldPromptToCreatePasskey();
+      const shouldPromptToCreatePasskey = await authsignal.passkey.shouldPromptToCreatePasskey({
+        username: email,
+      });
 
       if (shouldPromptToCreatePasskey) {
         navigation.navigate('CreatePasskey');
       }
     })();
-  }, [navigation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email]);
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     (async () => {
@@ -32,6 +42,12 @@ export function HomeScreen({navigation}: any) {
         const userProfile = await getUserProfile();
 
         setEmail(userProfile.email);
+
+        const hasRegisteredWhatsApp = userProfile.authenticators.some((a: any) => a.verificationMethod === 'WHATSAPP');
+
+        if (!hasRegisteredWhatsApp) {
+          navigation.navigate('PhoneNumber');
+        }
       } catch (error) {
         Alert.alert(
           'Error fetching user profile',
@@ -82,6 +98,18 @@ export function HomeScreen({navigation}: any) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Home</Text>
+      <Button
+        onPress={async () => {
+          const {data: success, error} = await authsignal.inapp.deletePin({username: email!});
+
+          if (success) {
+            Alert.alert('PIN deleted');
+          } else {
+            Alert.alert('Error deleting PIN', error ?? 'An unexpected error occurred');
+          }
+        }}>
+        Delete PIN
+      </Button>
     </ScrollView>
   );
 }
@@ -95,5 +123,6 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 18,
+    marginBottom: 20,
   },
 });

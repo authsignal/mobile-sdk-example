@@ -1,21 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Alert, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 import {Button} from '../components/Button';
-import {authsignal} from '../authsignal';
 import {useAppContext} from '../context';
-import {signIn} from '../api';
+import {sendOtp, signInWithOtp} from '../api';
 
-export function VerifyEmailScreen({route}: any) {
+export function SignInEmailScreen({navigation, route}: any) {
   const {setAuthenticated, setEmail} = useAppContext();
 
   const [code, setCode] = useState('');
 
-  const {email} = route.params;
-
-  useEffect(() => {
-    authsignal.email.challenge();
-  }, []);
+  const {challengeId, email} = route.params;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -31,14 +26,14 @@ export function VerifyEmailScreen({route}: any) {
       />
       <Button
         onPress={async () => {
-          const {data, error} = await authsignal.email.verify({code});
+          const response = await signInWithOtp({challengeId, verificationCode: code});
 
-          if (error || !data?.token) {
+          if (!response.isVerified) {
             Alert.alert('Invalid code');
+          } else if (response.challengeId) {
+            navigation.navigate('SignInWhatsApp', response);
           } else {
             try {
-              await signIn(data.token);
-
               setEmail(email);
               setAuthenticated(true);
             } catch (ex) {
@@ -56,9 +51,13 @@ export function VerifyEmailScreen({route}: any) {
           onPress={async () => {
             setCode('');
 
-            await authsignal.email.challenge();
+            const {errorCode} = await sendOtp({challengeId});
 
-            Alert.alert('Verification code re-sent');
+            if (errorCode) {
+              Alert.alert('Unable to resend code.', `Error code: ${errorCode}`);
+            } else {
+              Alert.alert('Verification code re-sent');
+            }
           }}>
           <Text style={styles.link}>Re-send it</Text>
         </TouchableOpacity>

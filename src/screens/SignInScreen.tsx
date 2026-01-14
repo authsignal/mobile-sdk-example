@@ -12,11 +12,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import * as Keychain from 'react-native-keychain';
 
 import {Button} from '../components/Button';
 import {authsignal} from '../authsignal';
-import {initEmailSignIn, signIn} from '../api';
+import {sendOtp, signInWithToken} from '../api';
 import {useAppContext} from '../context';
 
 export function SignInScreen({navigation}: any) {
@@ -24,17 +23,17 @@ export function SignInScreen({navigation}: any) {
 
   const [loading, setLoading] = useState(false);
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('chris@authsignal.com');
 
   async function signInWithPasskey() {
     const {data, errorCode} = await authsignal.passkey.signIn({action: 'signIn'});
 
     if (errorCode === 'user_canceled' || errorCode === 'no_credential' || !data?.token) {
       // Fall back to PIN if it has been setup and no passkey is available or user cancels
-      const pinCredentials = await Keychain.getGenericPassword({service: '@simplify'});
+      const {data: usernames} = await authsignal.inapp.getAllPinUsernames();
 
-      if (pinCredentials) {
-        navigation.navigate('PinEntry');
+      if (usernames && usernames.length > 0) {
+        navigation.navigate('SelectPinUser', {usernames});
       }
 
       return;
@@ -43,7 +42,7 @@ export function SignInScreen({navigation}: any) {
     setLoading(true);
 
     try {
-      await signIn(data.token);
+      await signInWithToken(data.token);
 
       await setAuthenticated(true);
     } catch (err) {
@@ -55,22 +54,25 @@ export function SignInScreen({navigation}: any) {
     }
   }
 
-  // Show passkey sign-in prompt when screen 1st appears if credential available
   useEffect(() => {
     signInWithPasskey();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPressContinue = async () => {
-    try {
-      await initEmailSignIn(email);
+    setLoading(true);
 
-      navigation.navigate('VerifyEmail', {email});
+    try {
+      const {challengeId} = await sendOtp({email, verificationMethod: 'EMAIL_OTP'});
+
+      navigation.navigate('SignInEmail', {email, challengeId});
     } catch (err) {
       if (err instanceof Error) {
         Alert.alert('Invalid credentials', err.message);
       }
     }
+
+    setLoading(false);
   };
 
   return (

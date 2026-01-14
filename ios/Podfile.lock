@@ -5,7 +5,7 @@ PODS:
   - AppAuth/Core (2.0.0)
   - AppAuth/ExternalUserAgent (2.0.0):
     - AppAuth/Core
-  - Authsignal (2.1.0)
+  - Authsignal (2.3.0)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
@@ -54,7 +54,6 @@ PODS:
     - React-RCTText (= 0.79.0)
     - React-RCTVibration (= 0.79.0)
   - React-callinvoker (0.79.0)
-  - React-Codegen (0.1.0)
   - React-Core (0.79.0):
     - glog
     - hermes-engine
@@ -1343,14 +1342,31 @@ PODS:
   - react-native-app-auth (8.0.3):
     - AppAuth (>= 1.7.6)
     - React-Core
-  - react-native-authsignal (2.1.0):
-    - Authsignal (= 2.1.0)
-    - RCT-Folly
+  - react-native-authsignal (2.3.0):
+    - Authsignal (= 2.3.0)
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
-    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-get-random-values (1.11.0):
     - React-Core
   - react-native-safe-area-context (5.3.0):
@@ -1942,7 +1958,6 @@ SPEC REPOS:
   trunk:
     - AppAuth
     - Authsignal
-    - React-Codegen
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2108,7 +2123,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
-  Authsignal: d2be0bc089688bbf3245b6dff76c0e6ea0f3c624
+  Authsignal: 271c511c4f084982cae401f051937502098bff98
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
@@ -2116,13 +2131,12 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: cd4bd90f051e3658c83cc00e87c603dfe1b75947
-  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
+  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: c147f8912f768e5eedbc5f115b2b223d007d9fe3
   RCTRequired: a71a7e9efd6546704d5abc683e0b68fcaa759861
   RCTTypeSafety: d1bd039b216cfc4a46ad1d8b4564f780648e1be0
   React: d03beae5eb2d321696d1ce2ae2d3989bccd31f46
   React-callinvoker: 11905b2d609a9205024e9c524d53f5d010bfa0b1
-  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: 76b58f53f3477414ba956db05c609478eb12f447
   React-CoreModules: 10fdcacad4777e0765d386dfe27cf2838cca41ed
   React-cxxreact: 960db89a5ed88467cac76b1d7bc9b14aa86858da
@@ -2149,7 +2163,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 2ef4d104cd7426fdbe4dbb283fcab8235ea92cc8
   React-microtasksnativemodule: a2d19a42269e02a7a86ab1c51fa3a4fa63be00ba
   react-native-app-auth: eb42594042a25455119a8c57194b4fd25b9352f4
-  react-native-authsignal: 52b13343596394b86ffa1438e4636311e0a282c9
+  react-native-authsignal: 62b91f6326dce5073a27cfdf1dd8d15c7a37a5cc
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-safe-area-context: 2827adb0d1250242917057a8ae0b3bfb5670d9e4
   react-native-vector-icons-fontawesome6: 1b667969bef2f430d1d7515163b980b856f58670

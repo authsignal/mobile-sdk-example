@@ -9,11 +9,15 @@ import {CreatePinScreen} from './screens/CreatePinScreen';
 import {PushChallengeScreen} from './screens/PushChallengeScreen';
 import {HomeScreen} from './screens/HomeScreen';
 import {SignInScreen} from './screens/SignInScreen';
+import {SelectPinUserScreen} from './screens/SelectPinUserScreen';
 import {PinEntryScreen} from './screens/PinEntryScreen';
-import {VerifyEmailScreen} from './screens/VerifyEmailScreen';
+import {SignInEmailScreen} from './screens/SignInEmailScreen';
 import {AppContext} from './context';
 import {getAccessToken, signOut} from './api';
 import {authsignal} from './authsignal';
+import {RegisterWhatsAppScreen} from './screens/RegisterWhatsAppScreen';
+import {PhoneNumberScreen} from './screens/PhoneNumberScreen';
+import {SignInWhatsAppScreen} from './screens/SignInWhatsAppScreen';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +54,7 @@ function App() {
     await authsignal.push.removeCredential();
 
     setAuthenticated(false);
+    setEmail('');
   };
 
   if (!initialized) {
@@ -93,21 +98,19 @@ function App() {
               <Stack.Screen name="CreatePasskey" component={CreatePasskeyScreen} />
               <Stack.Screen name="CreatePin" component={CreatePinScreen} />
               <Stack.Screen name="PushChallenge" component={PushChallengeScreen} />
+              <Stack.Screen name="PhoneNumber" component={PhoneNumberScreen} />
+              <Stack.Screen name="RegisterWhatsApp" component={RegisterWhatsAppScreen} />
             </Stack.Group>
           </Stack.Navigator>
         ) : (
           <Stack.Navigator>
             <Stack.Screen name="SignIn" component={SignInScreen} options={{headerShown: false}} />
-            <Stack.Screen
-              name="VerifyEmail"
-              component={VerifyEmailScreen}
-              options={{presentation: 'modal', title: '', headerBackTitle: 'Back'}}
-            />
-            <Stack.Screen
-              name="PinEntry"
-              component={PinEntryScreen}
-              options={{presentation: 'modal', title: '', headerBackTitle: 'Back'}}
-            />
+            <Stack.Group screenOptions={{presentation: 'modal', title: '', headerBackTitle: 'Back'}}>
+              <Stack.Screen name="SignInEmail" component={SignInEmailScreen} />
+              <Stack.Screen name="SignInWhatsApp" component={SignInWhatsAppScreen} />
+              <Stack.Screen name="SelectPinUser" component={SelectPinUserScreen} />
+              <Stack.Screen name="PinEntry" component={PinEntryScreen} />
+            </Stack.Group>
           </Stack.Navigator>
         )}
       </NavigationContainer>

@@ -1,16 +1,16 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Alert, SafeAreaView, StyleSheet, Text, TextInput} from 'react-native';
-import * as Keychain from 'react-native-keychain';
 
 import {authsignal} from '../authsignal';
-import {signIn} from '../api';
+import {signInWithToken} from '../api';
 import {useAppContext} from '../context';
 
-export function PinEntryScreen() {
+export function PinEntryScreen({route}: any) {
   const {setAuthenticated} = useAppContext();
-
   const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState('');
+
+  const username = route.params?.username;
 
   const onChangePinText = (value: string) => {
     if (value.length === 6) {
@@ -24,24 +24,26 @@ export function PinEntryScreen() {
   const submitPin = async (value: string) => {
     setLoading(true);
 
-    const pinCredentials = await Keychain.getGenericPassword({service: '@simplify'});
+    const {data, error} = await authsignal.inapp.verifyPin({
+      pin: value,
+      username,
+      action: 'signIn',
+    });
 
-    if (pinCredentials && pinCredentials.password !== value) {
+    if (error || !data) {
       setLoading(false);
 
-      return Alert.alert('Invalid PIN');
+      return Alert.alert('Error signing in with PIN.', error ?? 'Unexpected error.');
     }
 
-    const {data, error} = await authsignal.inapp.verify({action: 'signIn', username: 'chris@authsignal.com'});
-
-    if (!data?.token) {
+    if (!data.isVerified || !data.token) {
       setLoading(false);
 
-      return Alert.alert('Error signing in with PIN.', error);
+      return Alert.alert('Invalid PIN.');
     }
 
     try {
-      await signIn(data.token);
+      await signInWithToken(data.token);
 
       await setAuthenticated(true);
     } catch (err) {
@@ -83,18 +85,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: 'white',
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginLeft: 10,
-  },
   header: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 20,
-    marginHorizontal: 20,
-  },
-  text: {
     marginBottom: 20,
     marginHorizontal: 20,
   },
